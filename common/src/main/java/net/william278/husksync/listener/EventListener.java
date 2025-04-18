@@ -55,6 +55,13 @@ public abstract class EventListener {
         plugin.getDataSyncer().setUserData(user);
     }
 
+    protected final void handlePlayerLogin(@NotNull OnlineUser user) {
+        if (user.isNpc()) {
+            return;
+        }
+        plugin.lockPlayer(user.getUuid());
+    }
+
     /**
      * Handle a player leaving the server (including players switching to another proxied server)
      *
@@ -151,6 +158,7 @@ public abstract class EventListener {
      */
     public enum ListenerType {
         JOIN_LISTENER(Priority.LOWEST),
+        LOGIN_LISTENER(Priority.LOWEST),
         QUIT_LISTENER(Priority.LOWEST),
         DEATH_LISTENER(Priority.NORMAL);
 

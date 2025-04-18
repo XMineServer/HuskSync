@@ -82,6 +82,11 @@ public class BukkitEventListener extends EventListener implements BukkitJoinEven
     }
 
     @Override
+    public void handlePlayerLogin(@NotNull BukkitUser bukkitUser) {
+        super.handlePlayerLogin(bukkitUser);
+    }
+
+    @Override
     public void handlePlayerDeath(@NotNull PlayerDeathEvent event) {
         final OnlineUser user = BukkitUser.adapt(event.getEntity(), plugin);
 

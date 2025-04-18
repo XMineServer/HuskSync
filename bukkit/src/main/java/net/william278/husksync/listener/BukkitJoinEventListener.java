@@ -25,6 +25,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.jetbrains.annotations.NotNull;
 
 public interface BukkitJoinEventListener extends Listener {
@@ -52,7 +53,31 @@ public interface BukkitJoinEventListener extends Listener {
         }
     }
 
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    default void onPlayerLoginHighest(@NotNull PlayerLoginEvent event) {
+        if (handleEvent(EventListener.ListenerType.LOGIN_LISTENER, EventListener.Priority.HIGHEST)) {
+            handlePlayerLogin(BukkitUser.adapt(event.getPlayer(), getPlugin()));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    default void onPlayerLogin(@NotNull PlayerLoginEvent event) {
+        if (handleEvent(EventListener.ListenerType.LOGIN_LISTENER, EventListener.Priority.NORMAL)) {
+            handlePlayerLogin(BukkitUser.adapt(event.getPlayer(), getPlugin()));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    default void onPlayerLoginLowest(@NotNull PlayerLoginEvent event) {
+        if (handleEvent(EventListener.ListenerType.LOGIN_LISTENER, EventListener.Priority.LOWEST)) {
+            handlePlayerLogin(BukkitUser.adapt(event.getPlayer(), getPlugin()));
+        }
+    }
+
     void handlePlayerJoin(@NotNull BukkitUser player);
+
+    void handlePlayerLogin(@NotNull BukkitUser player);
 
     @NotNull
     HuskSync getPlugin();
