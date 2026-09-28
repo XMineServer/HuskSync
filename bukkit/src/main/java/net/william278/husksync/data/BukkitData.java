@@ -31,6 +31,7 @@ import net.william278.husksync.HuskSync;
 import net.william278.husksync.adapter.Adaptable;
 import net.william278.husksync.config.Settings.SynchronizationSettings.AttributeSettings;
 import net.william278.husksync.user.BukkitUser;
+import net.william278.husksync.util.SilentAdvancements;
 import org.bukkit.*;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.AttributeInstance;
@@ -360,8 +361,17 @@ public abstract class BukkitData implements Data {
 
                 // Award and revoke advancement criteria
                 final AdvancementProgress progress = player.getAdvancementProgress(advancement);
-                toAward.forEach(progress::awardCriteria);
-                toRevoke.forEach(progress::revokeCriteria);
+                // XMine start - выдача достижений без тостов
+                final Runnable award = () -> {
+                    toAward.forEach(progress::awardCriteria);
+                    toRevoke.forEach(progress::revokeCriteria);
+                };
+                if (!toAward.isEmpty() && plugin.getSettings().getSynchronization().isSilentAdvancements()) {
+                    SilentAdvancements.run(plugin, player, award);
+                } else {
+                    award.run();
+                }
+                // XMine end - выдача достижений без тостов
 
                 // Set player experience and level (prevent advancement awards applying twice), reset game rule
                 if (!toAward.isEmpty()

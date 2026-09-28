@@ -299,6 +299,12 @@ public class Settings {
         @Comment("Where to display sync notifications (ACTION_BAR, CHAT or NONE)")
         private Locales.NotificationSlot notificationDisplaySlot = Locales.NotificationSlot.ACTION_BAR;
 
+        // XMine start - выдача достижений без тостов
+        @Comment({"Apply synced advancements without showing the toast pop-ups, so players don't see every",
+                "advancement they already earned 'granted' again each time they join a server (Paper only)"})
+        private boolean silentAdvancements = true;
+        // XMine end - выдача достижений без тостов
+
         @Comment("Persist maps locked in a Cartography Table to let them be viewed on any server")
         private boolean persistLockedMaps = true;
 

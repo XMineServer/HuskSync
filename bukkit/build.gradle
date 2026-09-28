@@ -107,12 +107,10 @@ tasks {
 // проверить - поэтому блок целиком под условием project.name == '26.1.2', а не в
 // корневом build.gradle, где такой развилки нет.
 //
-// Версия - настоящий maven-SNAPSHOT (xmine-publish.yml передаёт её через
-// -PxmineVersion), а не собственная неизменяемая координата вроде
-// LibertyBans/CoreProtect (<апстрим>-xmine.N): первый прогон стенда пойдёт на
-// форке и правки нужны будут не раз, а SNAPSHOT-версию можно перезаливать по тому
-// же адресу. Значение по умолчанию - для локального ./gradlew build без -P, чтобы
-// сборка не падала на конфигурации.
+// Раздел fork-snapshot - раздел-кандидат пары форков (вики, ADR-0056). Версия
+// неизменяемая, считается из коммита в xmine-publish.yml и приходит через
+// -PxmineVersion, раздел - через XMINE_MAVEN_URL. Значения по умолчанию - только
+// чтобы локальная сборка без них не падала.
 if (project.name == '26.1.2') {
     def xmineVersion = providers.gradleProperty('xmineVersion').getOrElse('0.0.0-xmine-local-SNAPSHOT')
 
@@ -120,10 +118,8 @@ if (project.name == '26.1.2') {
         publications {
             // Своя координата, не мешает апстримным mavenJavaBukkit_* публикациям
             // (net.william278.husksync:husksync-bukkit) - у них нет настроенных
-            // repositories, поэтому publish-задачи для них даже не создаются
-            // (проверено: ./gradlew :bukkit:26.1.2:tasks --group publishing до этой
-            // правки показывает только publish/publishToMavenLocal без адреса).
-            xmineThirdParty(MavenPublication) {
+            // repositories, поэтому publish-задачи для них даже не создаются.
+            xmineFork(MavenPublication) {
                 groupId = 'ru.xmine.thirdparty'
                 artifactId = 'husksync'
                 version = xmineVersion
@@ -141,10 +137,8 @@ if (project.name == '26.1.2') {
         repositories {
             maven {
                 name = 'xmine'
-                // third-party - тот самый закрытый раздел, откуда фактически берёт
-                // файл XMineNode (repo: third-party в plugins/common.yml).
                 url = uri(providers.environmentVariable('XMINE_MAVEN_URL')
-                        .getOrElse('https://maven.xmine.world/third-party'))
+                        .getOrElse('https://maven.xmine.world/fork-snapshot'))
                 credentials {
                     username = providers.environmentVariable('XMINE_MAVEN_USERNAME').orNull
                     password = providers.environmentVariable('XMINE_MAVEN_PASSWORD').orNull
@@ -153,7 +147,7 @@ if (project.name == '26.1.2') {
         }
     }
 
-    tasks.named('publishXmineThirdPartyPublicationToXmineRepository') {
+    tasks.named('publishXmineForkPublicationToXmineRepository') {
         dependsOn(shadowJar)
     }
 }
